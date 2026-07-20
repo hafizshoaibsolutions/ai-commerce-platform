@@ -1,6 +1,30 @@
 import mongoose, { Schema } from "mongoose";
 import { IOrder } from "../interfaces/order.interface";
 
+
+
+const OrderItemSchema = new Schema(
+  {
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+  }
+);
+
 const OrderSchema = new Schema<IOrder>(
   {
     userId: {
@@ -9,27 +33,7 @@ const OrderSchema = new Schema<IOrder>(
       required: true,
     },
 
-    items: [
-      {
-        productId: {
-          type: Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
-
-        price: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
-      },
-    ],
+    orderItems: [OrderItemSchema],
 
     shippingAddressId: {
       type: Schema.Types.ObjectId,
