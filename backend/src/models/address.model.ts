@@ -13,6 +13,11 @@ const AddressSchema = new Schema<IAddress>(
       default: "Home",
       trim: true,
     },
+    shippingAddressPhoneNumber: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     streetAddress: {
       type: String,
       required: true,

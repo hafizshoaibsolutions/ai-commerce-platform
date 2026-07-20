@@ -2,6 +2,7 @@ import { Document, Types } from "mongoose";
 
 export interface ICartItem {
   productId: Types.ObjectId;
+  variantId?: Types.ObjectId;
   quantity: number;
 }
 

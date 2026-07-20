@@ -8,13 +8,19 @@ const CartItemSchema = new Schema(
       ref: "Product",
       required: true,
     },
+    variantId: {
+      type: Schema.Types.ObjectId,
+      required: false,
+    },
 
     quantity: {
       type: Number,
       required: true,
       min: [1, "Quantity must be at least 1"],
     },
-  }
+  },
+
+  {_id: false}
 );
 
 const CartSchema = new Schema<ICart>(

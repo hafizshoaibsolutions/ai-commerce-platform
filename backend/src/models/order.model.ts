@@ -10,6 +10,26 @@ const OrderItemSchema = new Schema(
       ref: "Product",
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    image: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    variantId: {
+      type: Schema.Types.ObjectId,
+      required: false,
+    },
+    variant:{
+      type: Map,
+      of: String,
+      default: {},
+    },
+
 
     quantity: {
       type: Number,

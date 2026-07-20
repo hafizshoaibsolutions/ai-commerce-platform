@@ -2,7 +2,17 @@ import { Document, Types } from "mongoose";
 
 export interface IOrderItem {
   productId: Types.ObjectId;
+
+  title: string;
+
+  image: string;
+
+  variantId?: Types.ObjectId;
+
+  variant?: Record<string, string>;
+
   quantity: number;
+  
   price: number;
 }
 

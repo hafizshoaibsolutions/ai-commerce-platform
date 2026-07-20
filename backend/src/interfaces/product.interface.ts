@@ -41,6 +41,7 @@ export interface IVariant {
   options: IVariantOption[];
 
   shipping: IShipping;
+  
 }
 
 export interface IRating {
@@ -71,11 +72,15 @@ export interface IProduct {
 
   globalAttributes: IAttribute[];
 
+  specifications: Map<string, string>;
+
   variants: IVariant[];
 
   status: "draft" | "active" | "archived";
 
   isFeatured: boolean;
+
+  tags?: string[];
 
   ratings: IRating;
 

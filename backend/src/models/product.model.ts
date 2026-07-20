@@ -242,7 +242,11 @@ const ProductSchema = new Schema<IProduct>(
       type: [AttributeSchema],
       default: [],
     },
-
+    specifications: {
+      type: Map,
+      of: String,
+      default: {},
+    },
     variants: {
       type: [VariantSchema],
       validate: [
@@ -262,6 +266,11 @@ const ProductSchema = new Schema<IProduct>(
       default: false,
     },
 
+    tags: {
+      type: [String],
+      default: [],
+    },
+
     ratings: {
       average: {
         type: Number,
@@ -275,8 +284,7 @@ const ProductSchema = new Schema<IProduct>(
         default: 0,
         min: 0,
       },
-    },
-
+    }, 
     seo: {
       metaTitle: String,
       metaDescription: String,
