@@ -50,7 +50,7 @@ const AddressSchema = new Schema<IAddress>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Index for faster lookup of a user's addresses

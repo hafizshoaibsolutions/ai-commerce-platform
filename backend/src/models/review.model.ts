@@ -35,14 +35,11 @@ const ReviewSchema = new Schema<IReview>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Prevent one user from reviewing the same product multiple times
-ReviewSchema.index(
-  { userId: 1, productId: 1 },
-  { unique: true }
-);
+ReviewSchema.index({ userId: 1, productId: 1 }, { unique: true });
 
 // Faster product review queries
 ReviewSchema.index({ productId: 1 });

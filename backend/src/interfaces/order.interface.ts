@@ -12,7 +12,7 @@ export interface IOrderItem {
   variant?: Record<string, string>;
 
   quantity: number;
-  
+
   price: number;
 }
 

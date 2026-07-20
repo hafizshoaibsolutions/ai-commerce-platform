@@ -20,7 +20,7 @@ const CartItemSchema = new Schema(
     },
   },
 
-  {_id: false}
+  { _id: false },
 );
 
 const CartSchema = new Schema<ICart>(
@@ -33,11 +33,10 @@ const CartSchema = new Schema<ICart>(
     },
 
     cartItems: [CartItemSchema],
-      
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 CartSchema.index({ userId: 1 });

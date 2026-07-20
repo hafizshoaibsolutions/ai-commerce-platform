@@ -19,21 +19,15 @@ const WishlistSchema = new Schema<IWishlist>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Faster lookup by user
 WishlistSchema.index({ userId: 1 });
 
 // Prevent duplicate products in the same wishlist
-WishlistSchema.index(
-  { userId: 1, productIds: 1 },
-  { unique: true }
-);
+WishlistSchema.index({ userId: 1, productIds: 1 }, { unique: true });
 
-const Wishlist = mongoose.model<IWishlist>(
-  "Wishlist",
-  WishlistSchema
-);
+const Wishlist = mongoose.model<IWishlist>("Wishlist", WishlistSchema);
 
 export default Wishlist;

@@ -41,7 +41,6 @@ export interface IVariant {
   options: IVariantOption[];
 
   shipping: IShipping;
-  
 }
 
 export interface IRating {

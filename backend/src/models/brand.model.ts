@@ -27,7 +27,7 @@ const BrandSchema = new Schema<IBrand>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // ==========================================
@@ -39,4 +39,3 @@ BrandSchema.index({ isActive: 1 });
 const Brand = mongoose.model<IBrand>("Brand", BrandSchema);
 
 export default Brand;
-

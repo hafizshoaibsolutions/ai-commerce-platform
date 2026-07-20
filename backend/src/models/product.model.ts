@@ -8,7 +8,6 @@ import {
   IVariantOption,
 } from "../interfaces/product.interface";
 
-
 const AttributeSchema = new Schema<IAttribute>(
   {
     key: {
@@ -32,9 +31,8 @@ const AttributeSchema = new Schema<IAttribute>(
   },
   {
     _id: false,
-  }
+  },
 );
-
 
 const ShippingSchema = new Schema<IShipping>(
   {
@@ -70,9 +68,8 @@ const ShippingSchema = new Schema<IShipping>(
   },
   {
     _id: false,
-  }
+  },
 );
-
 
 const ImageSchema = new Schema<IImage>(
   {
@@ -99,10 +96,8 @@ const ImageSchema = new Schema<IImage>(
   },
   {
     _id: false,
-  }
+  },
 );
-
-
 
 const VariantOptionSchema = new Schema<IVariantOption>(
   {
@@ -120,9 +115,8 @@ const VariantOptionSchema = new Schema<IVariantOption>(
   },
   {
     _id: false,
-  }
+  },
 );
-
 
 const VariantSchema = new Schema<IVariant>(
   {
@@ -178,10 +172,8 @@ const VariantSchema = new Schema<IVariant>(
   },
   {
     timestamps: true,
-  }
+  },
 );
-
-
 
 const ProductSchema = new Schema<IProduct>(
   {
@@ -284,7 +276,7 @@ const ProductSchema = new Schema<IProduct>(
         default: 0,
         min: 0,
       },
-    }, 
+    },
     seo: {
       metaTitle: String,
       metaDescription: String,
@@ -296,9 +288,8 @@ const ProductSchema = new Schema<IProduct>(
   },
   {
     timestamps: true,
-  }
+  },
 );
-
 
 ProductSchema.index({ slug: 1 });
 
@@ -326,7 +317,6 @@ ProductSchema.index({
   description: "text",
   shortDescription: "text",
 });
-
 
 const Product = model<IProduct>("Product", ProductSchema);
 

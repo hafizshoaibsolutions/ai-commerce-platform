@@ -1,49 +1,44 @@
 import mongoose, { Schema } from "mongoose";
 import { IOrder } from "../interfaces/order.interface";
 
+const OrderItemSchema = new Schema({
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: "Product",
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  image: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  variantId: {
+    type: Schema.Types.ObjectId,
+    required: false,
+  },
+  variant: {
+    type: Map,
+    of: String,
+    default: {},
+  },
 
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1,
+  },
 
-const OrderItemSchema = new Schema(
-  {
-    productId: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    image: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    variantId: {
-      type: Schema.Types.ObjectId,
-      required: false,
-    },
-    variant:{
-      type: Map,
-      of: String,
-      default: {},
-    },
-
-
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
-
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-  }
-);
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+});
 
 const OrderSchema = new Schema<IOrder>(
   {
@@ -106,7 +101,7 @@ const OrderSchema = new Schema<IOrder>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Faster user order queries

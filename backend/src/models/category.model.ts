@@ -32,7 +32,7 @@ const CategorySchema = new Schema<ICategory>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // ==========================================
@@ -45,4 +45,3 @@ CategorySchema.index({ isActive: 1 });
 const Category = mongoose.model<ICategory>("Category", CategorySchema);
 
 export default Category;
-    

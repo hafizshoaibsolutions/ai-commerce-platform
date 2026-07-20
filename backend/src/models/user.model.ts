@@ -58,7 +58,7 @@ const UserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Indexes
@@ -69,4 +69,3 @@ UserSchema.index({ isActive: 1 });
 const User = mongoose.model<IUser>("User", UserSchema);
 
 export default User;
-
