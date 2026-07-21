@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export interface IRefreshToken  {
+export interface IRefreshToken {
   token: string;
   expiresAt: Date;
   userAgent?: string;

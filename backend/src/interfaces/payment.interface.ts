@@ -1,4 +1,4 @@
-import {Document, Types} from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface IPayment extends Document {
   userId: Types.ObjectId;
@@ -6,5 +6,6 @@ export interface IPayment extends Document {
   amount: number;
   status: "pending" | "completed" | "failed";
   transactionId?: string;
-  method: "credit_card" | "paypal" | "stripe" | "bank_transfer" | "cash_on_delivery";
-}   
+  method:
+    "credit_card" | "paypal" | "stripe" | "bank_transfer" | "cash_on_delivery";
+}
