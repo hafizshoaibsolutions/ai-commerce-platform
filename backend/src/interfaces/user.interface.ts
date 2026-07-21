@@ -1,5 +1,12 @@
 import { Document } from "mongoose";
 
+export interface IRefreshToken  {
+  token: string;
+  expiresAt: Date;
+  userAgent?: string;
+  createdAt: Date;
+}
+
 export interface IUser extends Document {
   name: string;
   email: string;
@@ -14,6 +21,7 @@ export interface IUser extends Document {
   isEmailVerified: boolean;
 
   lastLogin?: Date;
+  refreshTokens: IRefreshToken[];
 
   createdAt: Date;
   updatedAt: Date;
