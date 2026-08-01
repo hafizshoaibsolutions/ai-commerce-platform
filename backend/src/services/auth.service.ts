@@ -1,4 +1,5 @@
 import User from "../models/user.model";
+import AppError from "../utils/app-error.util";
 import { hashPassword } from "../utils/password.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import { RegisterUserInput } from "../validators/auth.validation";
@@ -10,7 +11,7 @@ export const registerUser = async (
   const { name, email, password } = userData;
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    throw new Error("Email already exists");
+    throw new AppError("Email already exists", 409);
   }
 
   const hashedPassword = await hashPassword(password);
@@ -23,7 +24,6 @@ export const registerUser = async (
   const accessToken = generateAccessToken(newUser._id.toString());
   const refreshToken = generateRefreshToken(newUser._id.toString());
 
-
   newUser.refreshTokens.push({
     token: refreshToken,
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
@@ -33,12 +33,12 @@ export const registerUser = async (
 
   await newUser.save();
 
-    return {
+  return {
     user: {
-      id:    newUser._id.toString(),
-      name:  newUser.name,
+      id: newUser._id.toString(),
+      name: newUser.name,
       email: newUser.email,
-      role:  newUser.role,
+      role: newUser.role,
     },
     accessToken,
     refreshToken,

@@ -4,6 +4,9 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
+import authRoutes from "./routes/auth.routes";
+import errorMiddleware from "./middlewares/error.middleware";
+
 const app: Application = express();
 
 app.use(helmet());
@@ -20,6 +23,10 @@ app.use(
 app.use(express.json());
 
 app.use(cookieParser());
+
+app.use("/api/auth", authRoutes);
+
+app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
