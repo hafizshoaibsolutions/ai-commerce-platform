@@ -142,3 +142,25 @@ export const refreshAccessToken = async (refreshToken: string) => {
     refreshToken: newRefreshToken,
   };
 };
+
+export const logoutUser = async (refreshToken: string) => {
+  if (!refreshToken) {
+    throw new AppError("Refresh token is required", 401);
+  }
+
+  const user = await User.findOne({
+    "refreshTokens.token": refreshToken,
+  }).select("+refreshTokens");
+
+  if (!user) {
+    throw new AppError("Invalid refresh token", 401);
+  }
+
+  user.refreshTokens = user.refreshTokens.filter(
+    (rt) => rt.token !== refreshToken,
+  );
+
+  await user.save();
+
+  return true;
+};

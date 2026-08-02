@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model";
 import AppError from "../utils/app-error.util";
 
-interface jwtPayload {
+interface JwtPayload {
   userId: string;
 }
 
@@ -25,7 +25,7 @@ export const authenticate = async (
     const decoded = jwt.verify(
       token,
       process.env.ACCESS_TOKEN_SECRET!,
-    ) as jwtPayload;
+    ) as JwtPayload;
 
     const user = await User.findById(decoded.userId).select(
       "-password -refreshTokens",

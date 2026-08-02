@@ -3,6 +3,7 @@ import {
   registerUser,
   loginUser,
   refreshAccessToken,
+  logoutUser,
 } from "../services/auth.service";
 
 export const registerController = async (
@@ -86,6 +87,31 @@ export const refreshTokenController = async (
       data: {
         accessToken: result.accessToken,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logoutController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    await logoutUser(refreshToken);
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
     });
   } catch (error) {
     next(error);
