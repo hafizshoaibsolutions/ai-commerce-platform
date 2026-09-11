@@ -4,6 +4,9 @@ import {
   loginUser,
   refreshAccessToken,
   logoutUser,
+  verifyEmail,
+  forgotPassword,
+  resetPassword,
 } from "../services/auth.service";
 
 export const registerController = async (
@@ -24,10 +27,13 @@ export const registerController = async (
 
     res.status(201).json({
       success: true,
-      message: "User registered successfully",
+      message: result.emailSent
+        ? "User registered successfully"
+        : "Account created, but the verification email could not be sent. You can request a new verification link.",
       data: {
         user: result.user,
         accessToken: result.accessToken,
+        emailSent: result.emailSent,
       },
     });
   } catch (error) {
@@ -112,6 +118,64 @@ export const logoutController = async (
     res.status(200).json({
       success: true,
       message: "User logged out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyEmailController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    console.log("Received request for email verification with params:", req.params);
+    const token = req.params.token as string;
+
+    console.log("Received token for email verification:", token);
+
+    await verifyEmail(token);
+
+    res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPasswordController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+
+    await forgotPassword(email);
+
+    res.status(200).json({
+      success: true,
+      message: "If an account exists for that email, a reset link has been sent",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPasswordController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await resetPassword(req.body);
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset successfully. Please log in again",
     });
   } catch (error) {
     next(error);
