@@ -5,6 +5,7 @@ import {
   refreshTokenController,
   logoutController,
   verifyEmailController,
+  resendVerificationController,
   forgotPasswordController,
   resetPasswordController,
 } from "../controllers/auth.controller";
@@ -13,6 +14,7 @@ import {
   loginUserSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  resendVerificationSchema,
 } from "../validators/auth.validation";
 import { validate } from "../middlewares/validate.middleware";
 import {
@@ -36,6 +38,15 @@ router.post("/refresh-token", authLimiter, refreshTokenController);
 router.post("/logout", logoutController);
 
 router.get("/verify-email/:token", verifyEmailController);
+
+// Sends mail, so it shares the tight email/token limiter rather than the
+// credential one.
+router.post(
+  "/resend-verification",
+  passwordResetLimiter,
+  validate(resendVerificationSchema),
+  resendVerificationController,
+);
 
 router.post(
   "/forgot-password",

@@ -5,6 +5,7 @@ import {
   refreshAccessToken,
   logoutUser,
   verifyEmail,
+  resendVerificationEmail,
   forgotPassword,
   resetPassword,
 } from "../services/auth.service";
@@ -130,16 +131,36 @@ export const verifyEmailController = async (
   next: NextFunction,
 ) => {
   try {
-    console.log("Received request for email verification with params:", req.params);
     const token = req.params.token as string;
 
-    console.log("Received token for email verification:", token);
-
-    await verifyEmail(token);
+    const { alreadyVerified } = await verifyEmail(token);
 
     res.status(200).json({
       success: true,
-      message: "Email verified successfully",
+      message: alreadyVerified
+        ? "Email address was already verified"
+        : "Email verified successfully",
+      data: { alreadyVerified },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resendVerificationController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+
+    await resendVerificationEmail({ email });
+
+    res.status(200).json({
+      success: true,
+      message:
+        "If that address has an unverified account, a new verification link is on its way",
     });
   } catch (error) {
     next(error);

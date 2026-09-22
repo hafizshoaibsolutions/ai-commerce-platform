@@ -5,6 +5,10 @@ import AppError from "../utils/app-error.util";
 import { hashPassword } from "../utils/password.util";
 import { sendEmail } from "../utils/email.util";
 import {
+  passwordResetEmail,
+  verificationEmail,
+} from "../utils/email-templates.util";
+import {
   generateAccessToken,
   generateRefreshToken,
   generateEmailVerificationToken,
@@ -12,8 +16,36 @@ import {
 } from "../utils/token.util";
 import {
   RegisterUserInput,
+  ResendVerificationInput,
   ResetPasswordInput,
 } from "../validators/auth.validation";
+
+/**
+ * Sends the "confirm your address" link.
+ *
+ * The token rides as a path segment (`/verify-email/<token>`) to match the
+ * frontend route. Shared by register and resend so the two cannot drift apart.
+ */
+const sendVerificationEmail = async (user: {
+  _id: unknown;
+  name: string;
+  email: string;
+}): Promise<void> => {
+  const emailVerificationToken = generateEmailVerificationToken(
+    String(user._id),
+  );
+  const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${emailVerificationToken}`;
+
+  await sendEmail({
+    to: user.email,
+    ...verificationEmail({
+      name: user.name,
+      url: verifyUrl,
+      // Matches the 10m lifetime generateEmailVerificationToken signs for.
+      expiresInMinutes: 10,
+    }),
+  });
+};
 
 export const registerUser = async (
   userData: RegisterUserInput,
@@ -47,16 +79,7 @@ export const registerUser = async (
   // Send the verification email, but never let a mail failure block registration.
   let emailSent = true;
   try {
-    const emailVerificationToken = generateEmailVerificationToken(
-      newUser._id.toString(),
-    );
-
-    await sendEmail({
-      to: newUser.email,
-      subject: "Verify your email address",
-      text: `Welcome! Please verify your email address by clicking the link below (valid for 10 minutes):\n\n${process.env.CLIENT_URL}/verify-email?token=${emailVerificationToken}\n\nIf you didn't create an account, you can ignore this email.`,
-      html: `<p>Welcome! Please verify your email address by clicking the link below (valid for 10 minutes):</p><p><a href="${process.env.CLIENT_URL}/verify-email?token=${emailVerificationToken}">Verify email</a></p><p>If you didn't create an account, you can ignore this email.</p>`,
-    });
+    await sendVerificationEmail(newUser);
   } catch (error) {
     emailSent = false;
     console.error("[email] Failed to send verification email:", error);
@@ -194,11 +217,6 @@ export const logoutUser = async (refreshToken: string) => {
 };
 
 export const verifyEmail = async (token: string) => {
-
-
-  console.log("Verifying email with token:", token);
-
-
   let decodedToken: { userId: string };
 
   try {
@@ -207,7 +225,13 @@ export const verifyEmail = async (token: string) => {
       process.env.EMAIL_VERIFY_TOKEN_SECRET!,
     ) as { userId: string };
   } catch (error) {
-    throw new AppError("Invalid or expired verification token", 400);
+    // Expiry is worth separating from a token we can't read at all: the UI can
+    // offer a fresh link for one, and must not imply tampering for the other.
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new AppError("Verification link has expired", 410);
+    }
+
+    throw new AppError("Invalid verification token", 400);
   }
 
   const user = await User.findById(decodedToken.userId);
@@ -215,8 +239,41 @@ export const verifyEmail = async (token: string) => {
     throw new AppError("User not found", 404);
   }
 
+  // Following an old link a second time is not a failure — report it as such so
+  // the UI can say the address was already confirmed rather than claiming a
+  // fresh success.
+  if (user.isEmailVerified) {
+    return { alreadyVerified: true };
+  }
+
   user.isEmailVerified = true;
   await user.save();
+
+  return { alreadyVerified: false };
+};
+
+/**
+ * Issues a fresh verification link.
+ *
+ * Silently succeeds for an unknown address and for one that is already
+ * verified, so the endpoint can't be used to discover which emails have
+ * accounts — the same reasoning as `forgotPassword`.
+ */
+export const resendVerificationEmail = async ({
+  email,
+}: ResendVerificationInput) => {
+  const user = await User.findOne({ email });
+
+  if (!user || user.isEmailVerified) {
+    return true;
+  }
+
+  // A mail failure here must not reveal that the account exists either.
+  try {
+    await sendVerificationEmail(user);
+  } catch (error) {
+    console.error("[email] Failed to resend verification email:", error);
+  }
 
   return true;
 };
@@ -235,9 +292,12 @@ export const forgotPassword = async (email: string) => {
   try {
     await sendEmail({
       to: user.email,
-      subject: "Reset your password",
-      text: `You requested a password reset. Click the link below to set a new password (valid for 15 minutes):\n\n${resetLink}\n\nIf you didn't request this, you can ignore this email.`,
-      html: `<p>You requested a password reset. Click the link below to set a new password (valid for 15 minutes):</p><p><a href="${resetLink}">Reset password</a></p><p>If you didn't request this, you can ignore this email.</p>`,
+      ...passwordResetEmail({
+        name: user.name,
+        url: resetLink,
+        // Matches the 15m lifetime generatePasswordResetToken signs for.
+        expiresInMinutes: 15,
+      }),
     });
   } catch (error) {
     console.error("[email] Failed to send password reset email:", error);

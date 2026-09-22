@@ -1,0 +1,20 @@
+"use client";
+
+import { useRef, type ReactNode } from "react";
+import { Provider } from "react-redux";
+
+import { makeStore, type AppStore } from "@/store/store";
+
+/**
+ * Creates the Redux store once per client mount and hands it to react-redux.
+ * Must wrap any component that calls `useAppSelector` / `useAppDispatch`.
+ */
+export default function StoreProvider({ children }: { children: ReactNode }) {
+  const storeRef = useRef<AppStore | null>(null);
+
+  if (storeRef.current === null) {
+    storeRef.current = makeStore();
+  }
+
+  return <Provider store={storeRef.current}>{children}</Provider>;
+}
